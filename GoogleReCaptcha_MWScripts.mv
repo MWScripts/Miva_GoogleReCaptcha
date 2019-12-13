@@ -1,0 +1,298 @@
+<mvFunction name="Module_Description" parameters="module var" standardOutputLevel="">
+	<mvAssign name="l.module:code"		value="GRMWS">
+	<mvAssign name="l.module:name"		value="Google ReCaptcha - MWScripts">
+	<mvAssign name="l.module:provider"	value="MWScripts">
+	<mvAssign name="l.module:version"		value="1.00">
+	<mvAssign name="l.module:api_ver"		value="5.00">
+	<mvAssign name="l.module:features"	value="system, vis_system, data_store">
+</mvFunction>
+
+<mvFunction name="Module_Install_Store" parameters="module var" standardOutputLevel="" errorOutputLevel="">
+	<mvQuery
+		name="Merchant"
+		query="{ 'CREATE TABLE IF NOT EXISTS ' $ g.Store_Table_Prefix $ 'GoogleReCaptcha_MWScripts ( ReCaptchaVersion ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 ) $ ', SiteKey ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 100 ) $ ', SecretKey ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 100 ) $ ', WatchedActionList ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 100 ) $ ', WatchedActionList_ToleranceLevels ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 100 ) $ ' )' }"
+	>
+	<mvFunctionReturn value=1>
+</mvFunction>
+
+<mvFunction name="Module_Uninstall_Store" parameters="module var" standardOutputLevel="" errorOutputLevel="">
+	<mvQuery name="Merchant" query="{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'GoogleReCaptcha_MWScripts' }">
+	<mvFunctionReturn value=1>
+</mvFunction>
+
+<mvFunction name="Module_Upgrade_Store" parameters="module var, version" standardOutputLevel="" errorOutputLevel="">
+	<mvFunctionReturn value=1>
+</mvFunction>
+
+<mvFunction name="GoogleReCaptcha_MWScripts_Truncate" parameters="" standardOutputLevel="" errorOutputLevel="">
+	<mvQuery
+		name="Merchant"
+		query="{ 'TRUNCATE ' $ g.Store_Table_Prefix $ 'GoogleReCaptcha_MWScripts' }"
+	>
+	<mvIf expr="{ g.mvQuery_Error }">
+		<mvFunctionReturn value="{ [ g.Module_Library_Utilities ].Error( 'GoogleReCaptcha_MWScripts-00004', g.mvQuery_Error ) }">
+	</mvIf>
+
+	<mvFunctionReturn value=1>
+</mvFunction>
+
+<mvFunction name="GoogleReCaptcha_MWScripts_Insert" parameters="GoogleReCaptcha_MWScripts var" standardOutputLevel="" errorOutputLevel="">
+	<mvQuery
+		name="Merchant"
+		query="{ 'INSERT INTO ' $ g.Store_Table_Prefix $ 'GoogleReCaptcha_MWScripts ( ReCaptchaVersion, SiteKey, SecretKey, WatchedActionList, WatchedActionList_ToleranceLevels ) VALUES ( ?, ?, ?, ?, ? )' }"
+		fields="l.GoogleReCaptcha_MWScripts:ReCaptchaVersion, l.GoogleReCaptcha_MWScripts:SiteKey, l.GoogleReCaptcha_MWScripts:SecretKey, l.GoogleReCaptcha_MWScripts:WatchedActionList, l.GoogleReCaptcha_MWScripts:WatchedActionList_ToleranceLevels"
+	>
+	<mvIf expr="{ g.mvQuery_Error }">
+		<mvFunctionReturn value="{ [ g.Module_Library_Utilities ].Error( 'GoogleReCaptcha_MWScripts-00003', g.mvQuery_Error ) }">
+	</mvIf>
+
+	<mvFunctionReturn value=1>
+</mvFunction>
+
+<mvFunction name="Module_System_Tabs" parameters="module var" standardOutputLevel="">
+	<mvFunctionReturn value="GRMWS:Google ReCaptcha">
+</mvFunction>
+
+<mvFunction name="Module_System_Content" parameters="module var, tab, load_fields" standardOutputLevel="text, html, compresswhitespace">
+	<mvIf expr="{ l.tab EQ 'GRMWS' }">
+
+		<mvOpenView name="Merchant" view="GoogleReCaptcha_MWScripts_TableExists_View" query="{ 'SELECT count(*) AS TableCount FROM information_schema.TABLES WHERE TABLE_NAME = \'' $ g.Store_Table_Prefix $ 'GoogleReCaptcha_MWScripts\'' }">
+
+		<mvIf expr="{ g.mvOpenView_Error OR GoogleReCaptcha_MWScripts_TableExists_View.d.TableCount NE 1}">
+			<mvAssign name="l.ExistingData.ReCaptchaVersion" value="">
+			<mvAssign name="l.ExistingData.SiteKey" value="">
+			<mvAssign name="l.ExistingData.SecretKey" value="">
+			<mvAssign name="l.ExistingData.WatchedActionList" value="">
+			<mvAssign name="l.ExistingData.WatchedActionList_ToleranceLevels" value="">
+		<mvElse>
+			<mvCloseView name="Merchant" view="GoogleReCaptcha_MWScripts_TableExists_View">
+			<mvOpenView name="Merchant" view="GoogleReCaptcha_MWScripts_ExistingData_View" query="{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'GoogleReCaptcha_MWScripts' }">
+			<mvIf expr="{ g.mvOpenView_Error}">
+			<mvElse>
+				<mvAssign name="l.ExistingData.ReCaptchaVersion" value="{GoogleReCaptcha_MWScripts_ExistingData_View.d.ReCaptchaVersion}">
+				<mvAssign name="l.ExistingData.SiteKey" value="{GoogleReCaptcha_MWScripts_ExistingData_View.d.SiteKey}">
+				<mvAssign name="l.ExistingData.SecretKey" value="{GoogleReCaptcha_MWScripts_ExistingData_View.d.SecretKey}">
+				<mvAssign name="l.ExistingData.WatchedActionList" value="{GoogleReCaptcha_MWScripts_ExistingData_View.d.WatchedActionList}">
+				<mvAssign name="l.ExistingData.WatchedActionList_ToleranceLevels" value="{GoogleReCaptcha_MWScripts_ExistingData_View.d.WatchedActionList_ToleranceLevels}">
+
+				<mvCloseView name="Merchant" view="GoogleReCaptcha_MWScripts_ExistingData_View">
+			</mvIf>
+		</mvIf>
+
+		<h2>Google ReCaptcha</h2>
+		<p>Version <mvEval expr="{l.module:version}"></p>
+		<p>Notes:</p>
+		<ul>
+			<li>This module does not add ReCaptcha code to the front-end of the site, that must be done manually however you see fit.</li>
+			<li>Google's response token must be put in a form field named &quot;GoogleReCaptchaResponse&quot; (Google's documentation for ReCaptcha v3 uses &quot;g-recaptcha-response&quot;).</li>
+		</ul>
+		<br><br>
+		<hr>
+		<table border="0" cellspacing="0" cellpadding="1">
+			<tr>
+				<td><label for="GoogleReCaptcha_MWScripts_ReCaptchaVersion">ReCaptcha Version:</label></td>
+				<td>
+					<select id="GoogleReCaptcha_MWScripts_ReCaptchaVersion" name="GoogleReCaptcha_MWScripts:ReCaptchaVersion">
+						<mvIf expr="{l.ExistingData.ReCaptchaVersion EQ ''}"> <option value="" selected>Please Choose</option> <mvElse> <option value="">Please Choose</option> </mvIf>
+						<mvComment><!--<mvIf expr="{l.ExistingData.ReCaptchaVersion EQ 2}"> <option value="2" selected>2</option> <mvElse> <option value="2">2</option> </mvIf>--></mvComment>
+						<mvIf expr="{l.ExistingData.ReCaptchaVersion EQ 3}"> <option value="3" selected>3</option> <mvElse> <option value="3">3</option> </mvIf>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td><label for="GoogleReCaptcha_MWScripts_SiteKey">Site Key:</label></td>
+				<td><input style="width: 400px;" type="text" id="GoogleReCaptcha_MWScripts_SiteKey" name="GoogleReCaptcha_MWScripts:SiteKey" value="{encodeentities(l.ExistingData.SiteKey)}"></td>
+			</tr>
+			<tr>
+				<td><label for="GoogleReCaptcha_MWScripts_SecretKey">Secret Key:</label></td>
+				<td><input style="width: 400px;" type="text" id="GoogleReCaptcha_MWScripts_SecretKey" name="GoogleReCaptcha_MWScripts:SecretKey" value="{encodeentities(l.ExistingData.SecretKey)}"></td>
+			</tr>
+			<tr>
+				<td><label for="GoogleReCaptcha_MWScripts_WatchedActionList">Watched Action List (comma-separated):</label></td>
+				<td><input style="width: 400px;" type="text" id="GoogleReCaptcha_MWScripts_WatchedActionList" name="GoogleReCaptcha_MWScripts:WatchedActionList" value="{encodeentities(l.ExistingData.WatchedActionList)}"></td>
+			</tr>
+			<tr>
+				<td><label for="GoogleReCaptcha_MWScripts_WatchedActionList_ToleranceLevels">Watched Action List - Tolerance Levels (comma-separated):</label></td>
+				<td><input style="width: 400px;" type="text" id="GoogleReCaptcha_MWScripts_WatchedActionList_ToleranceLevels" name="GoogleReCaptcha_MWScripts:WatchedActionList_ToleranceLevels" value="{encodeentities(l.ExistingData.WatchedActionList_ToleranceLevels)}"></td>
+			</tr>
+		</table>
+	</mvIf>
+
+	<mvFunctionReturn value=1>
+</mvFunction>
+
+<mvFunction name="Module_System_Validate" parameters="module var" standardOutputLevel="">
+	<mvFunctionReturn value=1>
+</mvFunction>
+
+<mvFunction name="Module_System_Update" parameters="module var" standardOutputLevel="">
+	<mvIf expr="{ g.Tab NE 'GRMWS' }">
+		<mvFunctionReturn value=1>
+	<mvElse>
+		<mvQuery
+			name="Merchant"
+			query="{ 'CREATE TABLE IF NOT EXISTS ' $ g.Store_Table_Prefix $ 'GoogleReCaptcha_MWScripts ( ReCaptchaVersion ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 ) $ ', SiteKey ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 100 ) $ ', SecretKey ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 100 ) $ ', WatchedActionList ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 100 ) $ ', WatchedActionList_ToleranceLevels ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 100 ) $ ' )' }"
+		>
+
+		<mvIf expr="{ GoogleReCaptcha_MWScripts_Truncate() }">
+			<mvAssign name="l.settings:ReCaptchaVersion" value="{g.GoogleReCaptcha_MWScripts:ReCaptchaVersion}">
+		   <mvAssign name="l.settings:SiteKey" value="{g.GoogleReCaptcha_MWScripts:SiteKey}">
+		   <mvAssign name="l.settings:SecretKey" value="{g.GoogleReCaptcha_MWScripts:SecretKey}">
+		   <mvAssign name="l.settings:WatchedActionList" value="{g.GoogleReCaptcha_MWScripts:WatchedActionList}">
+		   <mvAssign name="l.settings:WatchedActionList_ToleranceLevels" value="{g.GoogleReCaptcha_MWScripts:WatchedActionList_ToleranceLevels}">
+
+			<mvAssign name="l.FinalResult" value="{ GoogleReCaptcha_MWScripts_Insert( l.settings ) }">
+			<mvFunctionReturn value="{ l.FinalResult }">
+		</mvIf>
+
+		<mvFunctionReturn value=1>
+	</mvIf>
+</mvFunction>
+
+<mvFunction name="SystemModule_Screen" parameters="module var, screen" standardOutputLevel="">
+	<mvFunctionReturn value="1">
+</mvFunction>
+
+<mvFunction name="SystemModule_Action" parameters="module var, action" standardOutputLevel="">
+
+	<mvAssign name="l.GoogleReCaptcha_ProceedWithValidation" value="true">
+
+	<mvOpenView name="Merchant" view="GoogleReCaptcha_MWScripts_TableExists_View" query="{ 'SELECT count(*) AS TableCount FROM information_schema.TABLES WHERE TABLE_NAME = \'' $ g.Store_Table_Prefix $ 'GoogleReCaptcha_MWScripts\'' }">
+	<mvIf expr="{ g.mvOpenView_Error OR GoogleReCaptcha_MWScripts_TableExists_View.d.TableCount NE 1}">
+		<mvAssign name="l.GoogleReCaptcha_ProceedWithValidation" value="false">
+	<mvElse>
+		<mvCloseView name="Merchant" view="GoogleReCaptcha_MWScripts_TableExists_View">
+	</mvIf>
+
+	<mvIf expr="{l.GoogleReCaptcha_ProceedWithValidation EQ 'true'}">
+		<mvOpenView name="Merchant" view="GoogleReCaptcha_MWScripts_ExistingData_View" query="{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'GoogleReCaptcha_MWScripts' }">
+		<mvIf expr="{ g.mvOpenView_Error}">
+			<mvAssign name="l.GoogleReCaptcha_ProceedWithValidation" value="false">
+		<mvElse>
+			<mvAssign name="l.ExistingData.ReCaptchaVersion" value="{GoogleReCaptcha_MWScripts_ExistingData_View.d.ReCaptchaVersion}">
+			<mvAssign name="l.ExistingData.SiteKey" value="{GoogleReCaptcha_MWScripts_ExistingData_View.d.SiteKey}">
+			<mvAssign name="l.ExistingData.SecretKey" value="{GoogleReCaptcha_MWScripts_ExistingData_View.d.SecretKey}">
+			<mvAssign name="l.ExistingData.WatchedActionList" value="{GoogleReCaptcha_MWScripts_ExistingData_View.d.WatchedActionList}">
+			<mvAssign name="l.ExistingData.WatchedActionList_ToleranceLevels" value="{GoogleReCaptcha_MWScripts_ExistingData_View.d.WatchedActionList_ToleranceLevels}">
+			<mvCloseView name="Merchant" view="GoogleReCaptcha_MWScripts_ExistingData_View">
+		</mvIf>
+	</mvIf>
+
+	<mvIf expr="{l.GoogleReCaptcha_ProceedWithValidation EQ 'true'}">
+		<mvIf expr="{ NOT( tolower(l.action) IN tolower(l.ExistingData.WatchedActionList) ) }">
+			<mvComment><!-- nothing to see here --></mvComment>
+		<mvElse>
+			<mvComment><!-- true false --></mvComment>
+			<mvAssign name="l.debug" value="false">
+
+			<mvIf expr="{ISNULL g.GoogleReCaptchaResponse OR g.GoogleReCaptchaResponse EQ ''}">
+				<mvIf expr="{l.debug EQ 'true'}"><mvEval expr="{ '<br>GoogleReCaptchaResponse is missing or empty, exiting' }"></mvIf>
+				<mvAssign name="l.null" value="{ miva_output_header( 'Status', '403 Forbidden' ) }">
+				<mvExit>
+			<mvElse>
+				<mvAssign name="l.secret" value="{encodeentities(l.ExistingData.SecretKey)}">
+				<mvAssign name="l.response" value="{encodeentities(g.GoogleReCaptchaResponse)}">
+				<mvAssign name="l.remoteip" value="{s.remote_addr}">
+				<mvComment><!-- 2019-11-04: to my surprise, the score will still be very high even if the IP we send here does not match a good token's original IP. Weird. --></mvComment>
+
+				<mvAssign name="l.ToleranceLevel" value="false">
+
+				<mvIf expr="{ indexof( ',', l.ExistingData.WatchedActionList, 1 ) EQ 0 }">
+					<mvAssign name="l.ToleranceLevel" value="{abs(l.ExistingData.WatchedActionList_ToleranceLevels)}">
+				<mvElse>
+					<mvComment>
+						<!--
+						* 2019-11-04: we have to find the action in question, and the corresponding tolerance level. Let's loop through the
+						* action list until we find the target action, and note the position. Then we'll loop through the tolerance levels
+						* until we reach the same position, and that entry will be our tolerance level.
+						* It's up to the user to enter them correctly (as parallel lists). We're not going crazy checking for errors such as
+						* list lengths being unequal.
+						-->
+					</mvComment>
+					<mvAssign name="l.WatchedActionList_SplitResult" value="{miva_splitstring( l.ExistingData.WatchedActionList, ',', l.WatchedActionList_Split, 'trim,lower' )}">
+					<mvAssign name="l.ToleranceLevels_SplitResult" value="{miva_splitstring( l.ExistingData.WatchedActionList_ToleranceLevels, ',', l.ToleranceLevels_Split, 'trim,lower' )}">
+
+					<mvAssign name="l.position" value="0">
+					<mvAssign name="l.WatchedPosition" value="0">
+
+					<mvForeach array="l.WatchedActionList_Split" iterator="l.WatchedActionList_Action">
+						<mvIf expr="{l.WatchedActionList_Action EQ tolower(l.action)}">
+							<mvAssign name="l.WatchedPosition" value="{l.position}">
+						</mvIf>
+						<mvAssign name="l.position" value="{l.position + 1}">
+					</mvForeach>
+
+					<mvAssign name="l.position" value="0">
+					<mvForeach array="l.ToleranceLevels_Split" iterator="l.ToleranceLevels_Level">
+						<mvIf expr="{l.position EQ l.WatchedPosition}">
+							<mvAssign name="l.ToleranceLevel" value="{abs(l.ToleranceLevels_Level)}">
+						</mvIf>
+						<mvAssign name="l.position" value="{l.position + 1}">
+					</mvForeach>
+				</mvIf>
+
+				<mvIf expr="{l.ToleranceLevel EQ 'false'}">
+					<mvIf expr="{l.debug EQ 'true'}"><mvEval expr="{ '<br>could not pinpoint tolerance level' }"></mvIf>
+				<mvElse>
+					<mvIf expr="{l.debug EQ 'true'}">
+						<mvEval expr="{ '<br>l.remoteip: ' $ l.remoteip }">
+						<mvEval expr="{ '<br>l.secret: ' $ l.secret }">
+						<mvEval expr="{ '<br>l.response: ' $ l.response }">
+					</mvIf>
+
+					<mvIf expr="{l.GoogleReCaptcha_ProceedWithValidation EQ 'true'}">
+						<mvCall
+							action="https://www.google.com/recaptcha/api/siteverify"
+							method="POST"
+							fields="l.secret,l.response,l.remoteip"
+						>
+							<mvAssign name="l.GDecodeResponse" value="{miva_json_decode(s.callvalue, l.GResponse)}">
+							<mvIf expr="{l.debug EQ 'true'}">
+								<mvEval expr="{ '<br>s.callvalue:<br>' $ s.callvalue }">
+								<mvEval expr="<br><br>">
+								<mvEval expr="{s.callvalue}">
+								<mvEval expr="{ '<br>' }">
+								<mvEval expr="{ '<br>l.GDecodeResponse: ' $ l.GDecodeResponse }">
+								<mvEval expr="{ '<br>l.GResponse: ' $ l.GResponse }">
+								<mvEval expr="{ '<br>l.GResponse:success: (' $ l.GResponse:success $ ')' }">
+								<mvEval expr="{ '<br>l.GResponse:score: (' $ l.GResponse:score $ ')' }">
+								<mvEval expr="{ '<br>abs(l.GResponse:score): (' $ abs(l.GResponse:score) $ ')' }">
+								<mvEval expr="{ '<br>l.ToleranceLevel: (' $ l.ToleranceLevel $ ')' }">
+								<mvIf expr="{l.GResponse:success}">
+									<mvEval expr="{ '<br>success is set' }">
+								<mvElse>
+									<mvEval expr="{ '<br>success is NOT set' }">
+								</mvIf>
+							</mvIf>
+
+							<mvIf expr="{l.GResponse:success EQ 0}">
+								<mvComment><!-- 2019-11-04: Google sends false but that gets turned into a 0 by the json decode --></mvComment>
+								<mvIf expr="{l.debug EQ 'true'}"><mvEval expr="{ '<br>Success is 0, exiting' }"></mvIf>
+								<mvAssign name="l.null" value="{ miva_output_header( 'Status', '403 Forbidden' ) }">
+								<mvExit>
+							<mvElseIf expr="{abs(l.GResponse:score) LT l.ToleranceLevel}">
+								<mvIf expr="{l.debug EQ 'true'}"><mvEval expr="{ '<br>Score is low, exiting' }"></mvIf>
+								<mvAssign name="l.null" value="{ miva_output_header( 'Status', '403 Forbidden' ) }">
+								<mvExit>
+							<mvElse>
+								<mvComment><!-- everything looks good, proceed --></mvComment>
+								<mvIf expr="{l.debug EQ 'true'}"><mvEval expr="{ '<br>everything looks good, proceed' }"></mvIf>
+							</mvIf>
+						</mvCall>
+					</mvIf>
+				</mvIf>
+			</mvIf>
+
+
+			<mvIf expr="{l.debug EQ 'true'}">
+				<mvExit>
+			</mvIf>
+		</mvif>
+	</mvif>
+
+	<mvFunctionReturn value="1">
+</mvFunction>
+
+<mvFunction name="SystemModule_UIException" parameters="module var, exception" standardOutputLevel="">
+	<mvFunctionReturn value="1">
+</mvFunction>
