@@ -23,3 +23,5 @@ General installation / setup instructions:
 - enter your Google ReCaptcha keys
 3. add Google ReCaptcha javascript to your site (https://developers.google.com/recaptcha)
 - be sure to use 'GoogleReCaptchaResponse' as the name of the form field for the ReCaptcha token
+
+![Screenshot](/screenshot.jpg?raw=true "Miva Admin Screenshot")
